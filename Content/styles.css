@@ -23,13 +23,13 @@
 }
 
 #p1-container {
-
+  border: solid 5px red;
 }
 
 #p2-container {
-    
+  border: solid 5px green;
 }
 
 #p3-container {
-    
+  border: solid 5px blue; 
 }

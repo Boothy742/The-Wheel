@@ -4,19 +4,19 @@ var originY = 200;
 
 //Data
 var questions = {
-  1: "Question 1",
-  2: "Question 2",
-  3: "Question 3",
-  4: "Question 4",
-  5: "Question 5"
+  1: "Question 1: What is 2 + 2 ?",
+  2: "Question 2: Where is Big Ben?",
+  3: "Question 3: How many moons does Earth have?",
+  4: "Question 4: Who lives in a pineapple under the sea?",
+  5: "Question 5: Which is harder, diamond or chalk?"
 }
 
 var answers = {
-  1: "1",
-  2: "2",
-  3: "3",
-  4: "4",
-  5: "5"
+  1: "4",
+  2: "London",
+  3: "1",
+  4: "Spongebob",
+  5: "Diamond"
 }
 
 var players = {
@@ -27,29 +27,23 @@ var players = {
 }
 
 var colours = {
-  0: "grey",
+  0: "black",
   1: "red",
   2: "green",
   3: "blue"
 }
 
 var scores = {
-  0: 30.001,
-  1: 10.001,
-  2: 20.001,
-  3: 5.001
-}
-
-var playerAngles = {
-  0: 30.001,
-  1: 10.001,
-  2: 20.001,
-  3: 5.001
+  0: 0.001,
+  1: 0.001,
+  2: 0.001,
+  3: 0.001
 }
 
 // Questions
 var questionId = 1;
 var question = document.getElementById("question");
+var answer = document.getElementById("answer");
 
 function loadQuestion(id) {
   question.innerText = questions[id];
@@ -60,6 +54,10 @@ var bank = document.getElementById("bank");
 var p1 = document.getElementById("p1");
 var p2 = document.getElementById("p2");
 var p3 = document.getElementById("p3");
+
+p1.parentElement.onclick = function(){submitAnswer(1);};
+p2.parentElement.onclick = function(){submitAnswer(2);};
+p3.parentElement.onclick = function(){submitAnswer(3);};
 
 function updateScores() {
   bank.innerText = "Bank: £" + scores[players["bank"]].toFixed(2);
@@ -105,24 +103,40 @@ function drawAngleLine(degrees) {
   drawLine(x, y);
 }
 
+function submitAnswer(p123) {
+  if (answer.value.toLowerCase() == answers[questionId].toLowerCase()) {
+    scores[p123] += 1; 
+  }
+  else { 
+    scores[0] += 1;
+  }
+
+  updateScores();
+  updatePie();
+  questionId += 1;
+  loadQuestion(questionId);
+}
+
+function updatePie() {
+  // Angle drawing
+  var totalScore = 0.0;
+  for (var player in scores)
+  {
+    totalScore += scores[player];
+  }
+  var degreesPerPoint = 360.0 / totalScore;
+
+  var angle = 0.0;
+  for (var playerId = 0; playerId < Object.keys(players).length; playerId++) {
+    var angleAddition = scores[playerId] * degreesPerPoint;
+    drawSector(angle, angle + angleAddition, colours[playerId]);
+    angle += angleAddition;
+    drawAngleLine(angle);
+  }
+}
+
 // Main logic
 loadQuestion(questionId);
 updateScores();
 drawOuterCircle(200, 200, radius - 5);
-
-// Angle drawing
-var totalScore = 0.0;
-for (var player in scores)
-{
-  totalScore += scores[player];
-}
-var degreesPerPoint = 360.0 / totalScore;
-
-var angle = 0.0;
-for (var playerId = 0; playerId < Object.keys(players).length; playerId++) {
-  var angleAddition = scores[playerId] * degreesPerPoint;
-  console.log(angle, angle + angleAddition);
-  drawSector(angle, angle + angleAddition, colours[playerId]);
-  angle += angleAddition;
-  drawAngleLine(angle);
-}
+updatePie();
