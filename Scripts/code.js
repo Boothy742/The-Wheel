@@ -26,6 +26,13 @@ var players = {
   "p3": 3
 }
 
+var colours = {
+  0: "grey",
+  1: "red",
+  2: "green",
+  3: "blue"
+}
+
 var scores = {
   0: 30.001,
   1: 10.001,
@@ -79,13 +86,22 @@ function drawLine(x, y) {
   context.stroke();
 }
 
-function drawAngle(degrees) {
-  console.log(degrees);
+function drawSector(startAngle, endAngle, colour) {
+  // Convert to radians
+  var startRadians = (startAngle - 90) / (180 / Math.PI);
+  var endRadians = (endAngle - 90) / (180 / Math.PI);
+  context.beginPath();
+  context.arc(originX, originY, radius, startRadians, endRadians)
+  context.lineTo(originX, originY);
+  context.fillStyle = colour;
+  context.fill();
+}
+
+function drawAngleLine(degrees) {
   // Convert to radians
   var radians = degrees / (180 / Math.PI);
   x = radius * Math.sin(radians) + originX;
   y = radius * -Math.cos(radians) + originY;
-  console.log(x, y);
   drawLine(x, y);
 }
 
@@ -102,8 +118,11 @@ for (var player in scores)
 }
 var degreesPerPoint = 360.0 / totalScore;
 
-var degrees = 0.0;
+var angle = 0.0;
 for (var playerId = 0; playerId < Object.keys(players).length; playerId++) {
-  degrees += scores[playerId] * degreesPerPoint;
-  drawAngle(degrees);
+  var angleAddition = scores[playerId] * degreesPerPoint;
+  console.log(angle, angle + angleAddition);
+  drawSector(angle, angle + angleAddition, colours[playerId]);
+  angle += angleAddition;
+  drawAngleLine(angle);
 }
